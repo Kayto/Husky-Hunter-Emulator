@@ -1,0 +1,20 @@
+diff --git a/src/devices/machine/nsc810.cpp b/src/devices/machine/nsc810.cpp
+index 74965d0781..f805729547 100644
+--- a/src/devices/machine/nsc810.cpp
++++ b/src/devices/machine/nsc810.cpp
+@@ -308,10 +308,12 @@ void nsc810_device::write(offs_t offset, uint8_t data)
+ 			{
+ 				m_timer_running[1] = true;
+ 				// no /64 prescaler on timer 1
+-				if (m_timer_mode[0] & 0x08)
+-					rate = m_timer_clock[0] / 2;
++				// FIX-9 (Kayto, 2026-05-14): was using m_timer_mode[0] and
++				// m_timer_clock[0] instead of Timer 1 equivalents.
++				if (m_timer_mode[1] & 0x08)
++					rate = m_timer_clock[1] / 2;
+ 				else
+-					rate = m_timer_clock[0];
++					rate = m_timer_clock[1];
+ 				m_timer[1]->adjust(attotime::zero, 0, attotime::from_hz(rate));
+ 			}
+ 			LOG("NSC810: Timer 1 Start write %02x\n", data);

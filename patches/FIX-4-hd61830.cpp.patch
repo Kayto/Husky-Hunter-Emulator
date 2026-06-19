@@ -1,0 +1,19 @@
+diff --git a/src/devices/video/hd61830.cpp b/src/devices/video/hd61830.cpp
+index d499b873..1fd4cc8b 100644
+--- a/src/devices/video/hd61830.cpp
++++ b/src/devices/video/hd61830.cpp
+@@ -32,9 +32,13 @@ void hd61830_device::hd61830(address_map &map)
+ 
+ 
+ // internal character generator ROM
++// FIX-4 (Kayto, 2026-05-04): replaced upstream BAD_DUMP "typed in from manual"
++// hd61830.bin (CRC 06a934da) with the actual Hunter font extracted from EPROM5
++// at offset 0x143A (CPU B43AH) -- 96 characters x 7 bytes, padded to 0x5C0.
++// See CHANGES.md FIX-4 for the extraction details.
+ ROM_START( hd61830 )
+ 	ROM_REGION( 0x5c0, "hd61830", 0 ) // internal 7360-bit chargen ROM
+-	ROM_LOAD( "hd61830.bin", 0x000, 0x5c0, BAD_DUMP CRC(06a934da) SHA1(bf3f074db5dc92e6f530cb18d6c013563099a87d) ) // typed in from manual
++	ROM_LOAD( "hd61830.bin", 0x000, 0x5c0, CRC(85497474) SHA1(734b6c8e399b758ce9e3b2356d47e3730aef0850) ) // Hunter font extracted from EPROM5 B43AH (96 chars x 7 bytes)
+ ROM_END
+ 
+ 

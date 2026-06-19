@@ -1,0 +1,19 @@
+diff --git a/src/devices/bus/rs232/null_modem.cpp b/src/devices/bus/rs232/null_modem.cpp
+index 203e78ec..ff29f384 100644
+--- a/src/devices/bus/rs232/null_modem.cpp
++++ b/src/devices/bus/rs232/null_modem.cpp
+@@ -30,8 +30,12 @@ void null_modem_device::device_add_mconfig(machine_config &config)
+ }
+ 
+ static INPUT_PORTS_START(null_modem)
+-	PORT_RS232_BAUD("RS232_TXBAUD", RS232_BAUD_9600, "TX Baud", null_modem_device, update_serial)
+-	PORT_RS232_BAUD("RS232_RXBAUD", RS232_BAUD_9600, "RX Baud", null_modem_device, update_serial)
++	// FIX-5 (Kayto, 2026-05-04): default TX/RX baud changed from RS232_BAUD_9600
++	// to RS232_BAUD_4800 for HCOM <-> Husky Hunter compatibility. Slot defaults
++	// cannot be overridden via the MAME CLI, so the source default is patched.
++	// See CHANGES.md, FIX-5.
++	PORT_RS232_BAUD("RS232_TXBAUD", RS232_BAUD_4800, "TX Baud", null_modem_device, update_serial)
++	PORT_RS232_BAUD("RS232_RXBAUD", RS232_BAUD_4800, "RX Baud", null_modem_device, update_serial)
+ 	PORT_RS232_DATABITS("RS232_DATABITS", RS232_DATABITS_8, "Data Bits", null_modem_device, update_serial)
+ 	PORT_RS232_PARITY("RS232_PARITY", RS232_PARITY_NONE, "Parity", null_modem_device, update_serial)
+ 	PORT_RS232_STOPBITS("RS232_STOPBITS", RS232_STOPBITS_1, "Stop Bits", null_modem_device, update_serial)

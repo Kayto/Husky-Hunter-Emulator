@@ -1,0 +1,74 @@
+# Proprietary / user-supplied ROMs and firmware-derived outputs
+roms/*
+!roms/ROMS_README.md
+*.rom
+*.bin
+*.zip
+*.ic50
+*.ic51
+*.ic52
+*.ic53
+*.ic54
+*.ic55
+hd61830.bin
+husky1983.rom
+
+# MAME runtime state and generated config
+nvram/
+cfg/
+config/ui.ini
+error.log
+snap/
+sta/
+
+# Local-only development tooling (not shipped in release)
+*.bak
+scripts/debug_*.mds
+scripts/DEBUG_SESSION_GUIDE.md
+build/build_hunter_debug.sh
+launchers/LaunchHunterDebug.bat
+launchers/LaunchHunterDebug.ps1
+
+# Build output directory (mame source clone, runtime binary, generated roms)
+output/
+
+# Binaries and build outputs
+*.exe
+*.dll
+*.pdb
+*.o
+*.obj
+obj/
+build.log
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Third-party/proprietary transfer utilities
+HuskyHCOM/hcomw/
+HuskyHCOM/hcomw.zip
+HuskyHCOM/**/*.EXE
+HuskyHCOM/**/*.COM
+HuskyHCOM/**/*.BIN
+HuskyHCOM/HSYNC/
+
+# Local/editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+index.md
+RELEASE_PLAN.md
+TODO.md
+
+# Development only files
+LaunchHunterPONGNET.*
+LaunchHunterSerial.*
+scripts/mame*
+00Archive/*
+*.7z
+*.tar.gz
+*.zip
+*.tar

@@ -1,0 +1,20 @@
+diff --git a/src/devices/machine/mm58174.cpp b/src/devices/machine/mm58174.cpp
+index c2c93619..cf63d59a 100644
+--- a/src/devices/machine/mm58174.cpp
++++ b/src/devices/machine/mm58174.cpp
+@@ -91,6 +91,15 @@ void mm58174_device::device_start()
+ 	m_rtc_timer->adjust(attotime::zero, 0, attotime::from_msec(100));
+ 	m_interrupt_timer = timer_alloc(FUNC(mm58174_device::scheduler_sync), this);
+ 
++	// FIX-7 (Husky-Hunter fork): default the clock to running so the RTC
++	// auto-advances from the host wallclock loaded by device_rtc_interface
++	// at startup. Real hardware retains m_control across power-down via the
++	// VBB battery-backup pin; the MAME RTC framework has no equivalent for
++	// per-bit chip persistence, so without this the clock is frozen at boot
++	// (mm58274c_device behaves the same way implicitly because it has no
++	// run/stop gate on its tick callback).
++	m_control = CTL_CLKRUN;
++
+ 	// register for state saving
+ 	save_item(NAME(m_years));
+ 	save_item(NAME(m_control));

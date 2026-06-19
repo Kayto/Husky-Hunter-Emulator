@@ -1,0 +1,12 @@
+diff --git a/scripts/src/osd/sdl.lua b/scripts/src/osd/sdl.lua
+index a53b7fe8..f642261b 100644
+--- a/scripts/src/osd/sdl.lua
++++ b/scripts/src/osd/sdl.lua
+@@ -57,6 +57,7 @@ function maintargetosdoptions(_target,_subtarget)
+ 		if _OPTIONS["USE_LIBSDL"]~="1" then
+ 			configuration { "mingw*"}
+ 				links {
++					"mingw32",   -- must precede SDL2main so WinMain resolves within --start-group
+ 					"SDL2main",
+ 					"SDL2",
+ 					"imm32",

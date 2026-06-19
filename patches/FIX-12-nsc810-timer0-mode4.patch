@@ -1,0 +1,18 @@
+diff --git a/src/devices/machine/nsc810.cpp b/src/devices/machine/nsc810.cpp
+index f805729547..cd93375385 100644
+--- a/src/devices/machine/nsc810.cpp
++++ b/src/devices/machine/nsc810.cpp
+@@ -93,7 +93,12 @@ template <int Timer>
+ TIMER_CALLBACK_MEMBER(nsc810_device::timer_tick)
+ {
+ 	m_timer_counter[Timer]--;
+-	if ((m_timer_mode[Timer] & 0x07) == 0x01 || (m_timer_mode[Timer] & 0x07) == 0x02)
++	// FIX-12 (Kayto, 2026-05-15): Hunter ROM SOUND_MODE_INIT programs Timer 0 mode=0x6C
++	// (bits 2:0 = 0x04, auto-reload interval mode). Debugger confirmed Timer 0 starts but
++	// never fires NMI because only modes 0x01/0x02 were handled here. Mode 4 is identical
++	// in MAME behaviour to mode 2 (decrement to zero, fire output, auto-reload).
++	if ((m_timer_mode[Timer] & 0x07) == 0x01 || (m_timer_mode[Timer] & 0x07) == 0x02
++		|| (m_timer_mode[Timer] & 0x07) == 0x04)
+ 	{
+ 		if (m_timer_counter[Timer] == 0)
+ 		{
