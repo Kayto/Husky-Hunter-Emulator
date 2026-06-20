@@ -39,9 +39,11 @@ real-Hunter behaviour with these fixes in place.
 
 ## Emulation status
 
-The ROM<->MAME hardware contract is validated end-to-end: paged-RAM banking, overlay
-loading, bank-switching, interrupt arming, and interrupt-vector fetching are all
-confirmed correct, with **no remaining ROM-derived hardware-contract gaps**. One known
+Across a comprehensive set of test programs the ROM<->MAME hardware contract held
+end-to-end: paged-RAM banking, overlay loading, bank-switching, interrupt arming, and
+interrupt-vector fetching all behaved correctly, with **no ROM-derived hardware-contract
+gaps observed** (bounded by test coverage -- see the [UNKNOWN] paths in
+`MAME_STATUS_RELEASE.md` -- not a proof none remain). One known
 modelling nuance: FIX-13's NMI-vector shadow at `0x0066-0x0068` is a *permanent*
 read-shadow (broader than the hardware's interrupt-acknowledge-timed override) --
 identical for the NMI vector fetch, an open question only for a *data* read of those

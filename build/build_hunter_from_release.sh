@@ -313,6 +313,10 @@ ROM_SRC_DIR="$REPO_ROOT/roms"
 EPROM_BINS=("EPROM0.BIN" "EPROM1.BIN" "EPROM2.BIN" "EPROM3.BIN" "EPROM4.BIN" "EPROM5.BIN")
 IC_NAMES=("eprom0.ic50" "eprom1.ic51" "eprom2.ic52" "eprom3.ic53" "eprom4.ic54" "eprom5.ic55")
 
+# package_roms: build roms/hunter.zip from EPROM*.BIN, or reuse an existing
+# hunter.zip. Defined as a function so the missing-ROM check below can re-run it
+# after the user drops the files in.
+package_roms() {
 all_eproms=true
 for f in "${EPROM_BINS[@]}"; do
     [[ -f "$ROM_SRC_DIR/$f" ]] || { all_eproms=false; break; }
@@ -369,6 +373,34 @@ else
     msg "Place EPROM0.BIN--EPROM5.BIN in: $ROM_SRC_DIR"
     msg "See roms/README.md for details."
 fi
+}
+
+package_roms
+
+# ---------------------------------------------------------------------------
+# Missing-ROM check -- pause before the test launch so the user can add ROMs.
+# MAME cannot start the Hunter without roms/hunter.zip, so loop here until it
+# exists (or the user chooses to skip the test launch).
+# ---------------------------------------------------------------------------
+ROM_READY=1
+while [[ ! -f "$ROM_SRC_DIR/hunter.zip" ]]; do
+    printf '\n'
+    printf '==> No ROM set found -- roms/hunter.zip is missing.\n'
+    printf '    The Hunter cannot start without it, so the test launch below would fail.\n'
+    printf '    Place your six EPROM dumps in:\n'
+    printf '      %s\n' "$ROM_SRC_DIR"
+    printf '        EPROM0.BIN  EPROM1.BIN  EPROM2.BIN  EPROM3.BIN  EPROM4.BIN  EPROM5.BIN\n'
+    printf '    (or drop a prebuilt hunter.zip there instead).\n'
+    printf '\n'
+    read -r -p "Press Enter to retry once the files are in place, or type S to skip: " _rom_retry
+    if [[ "${_rom_retry:-}" =~ ^[Ss] ]]; then
+        msg "No ROM set -- skipping the test launch and HCOM setup."
+        msg "Add EPROM*.BIN to roms/ and re-run this script (or a launcher) later."
+        ROM_READY=0
+        break
+    fi
+    package_roms
+done
 
 # ---------------------------------------------------------------------------
 # Post-build cleanup
@@ -385,7 +417,9 @@ msg "Build complete.  Runtime folder: $RUNTIME_DIR"
 # ---------------------------------------------------------------------------
 # Step 1 -- test the build and do one-time Hunter setup.
 # The user should launch the emulator now and verify it works.
+# (Skipped if no ROM set is available -- see the missing-ROM check above.)
 # ---------------------------------------------------------------------------
+if [[ "$ROM_READY" == "1" ]]; then
 printf '\n'
 printf '==> First launch -- test the build and set up the Hunter.\n'
 printf '    Launch via:  ./launchers/LaunchHunterMAME.ps1   (or LaunchHunterMAME.bat)\n'
@@ -397,6 +431,9 @@ printf '      2. Type CLCK and set the date and time.\n'
 printf '      3. Verify the Hunter is working, then quit MAME.\n'
 printf '\n'
 read -r -p "Press Enter once you have done the above and quit MAME..."
+else
+    msg "Test launch skipped -- no ROM set available. Add ROMs to roms/ then run a launcher to test."
+fi
 
 # ---------------------------------------------------------------------------
 # Step 2 -- optional source tree cleanup (~12 GB).
@@ -424,6 +461,10 @@ fi
 # the NVRAM is no longer clean enough for safe injection.  Skip this step and
 # install HCOM manually later via the serial bridge (Option B in HCOM_SETUP.md).
 # ---------------------------------------------------------------------------
+if [[ "$ROM_READY" != "1" ]]; then
+    msg "Skipping HCOM setup -- no ROM set / Hunter not tested."
+    msg "After adding ROMs and formatting the Hunter, run: cd HuskyHCOM && bash setup_hcom.sh"
+else
 printf '\n'
 cat <<'HCOMINFO'
 ==> HCOM Setup (optional)
@@ -459,6 +500,7 @@ else
     printf '    Remember: NVRAM injection needs a freshly formatted Hunter image.\n'
     printf '    If you have existing Hunter files, use the serial bridge instead\n'
     printf '    (see HuskyHCOM/HCOM_SETUP.md, Option B).\n'
+fi
 fi
 
 printf '\n'
