@@ -76,6 +76,30 @@ Double-click `LaunchHCOM-MAME.bat` (or run `LaunchHCOM-MAME.ps1` directly from P
 3. In the DOSBox-X window, type `HCOM` and press Enter.
 4. Use `L` in HCOM to switch to `D:` (the `HSYNC/` folder) for file transfers.
 
+## Hunter serial port settings (`COMS`)
+
+Any serial transfer -- the Option B install below, the serial terminal session,
+and all day-to-day serial-bridge use -- requires the Hunter's serial port to be
+configured first. On the Hunter, type `COMS` and press Enter to open the serial
+parameters screen, then set **both** directions to **4800 8N1**:
+
+```
+--------- Transmission Parameters ---------
+  Rate-4800   Prtcl-none    Pty-8bit
+  CTS-n  DTR-n  LF-n  Echo-n  T/O-no  Null-0
+
+---------- Receiving Parameters -----------
+  Rate-4800   Prtcl-none    Pty-8bit
+  RTS-off  DSR-n  DCD-n  T/O-no  Serig-off
+```
+
+> **Use 4800 8N1, not 2400.** The official Husky documentation (and the HCOM
+> *Software Download* screen) specifies 2400 8N1, but the working rate over the
+> MAME serial bridge is **4800 8N1** -- 2400 produces corruption and failed
+> transfers.
+
+These settings persist in the Hunter's NVRAM, so this is a one-time step.
+
 ## First-time HCOM.COM install on the emulated Hunter
 
 A factory-fresh Husky Hunter image does not yet have `HCOM.COM` installed.
@@ -125,25 +149,10 @@ This step is only needed once per fresh Hunter image.
    **communications failure** -- press any key to dismiss it.
 3. Press **S** to open the *Software Download* menu, then select
    **Husky Hunter** from the device list.
-4. HCOM displays the *Software Download* instructions screen. Configure the
-   MAME Hunter serial port to match the parameters shown there, **with one
-   exception: use 4800 baud, not 2400**.
-
-   **The official Husky documentation (and the HCOM screen itself) specifies
-   2400 8N1, but the working rate with the MAME serial bridge is **4800 8N1**.
-   Using 2400 will produce corruption and a failed download.**
-
-   On the Hunter, set the serial port as follows:
-
-   ```
-   --------- Transmission Parameters ---------
-     Rate-4800   Prtcl-none    Pty-8bit
-     CTS-n  DTR-n  LF-n  Echo-n  T/O-no  Null-0
-
-   ---------- Receiving Parameters -----------
-     Rate-4800   Prtcl-none    Pty-8bit
-     RTS-off  DSR-n  DCD-n  T/O-no  Serig-off
-   ```
+4. HCOM displays the *Software Download* instructions screen. If you have not
+   already configured the Hunter serial port, do so now via `COMS` -- see
+   [Hunter serial port settings](#hunter-serial-port-settings-coms) above. Use
+   **4800 8N1**, not the 2400 shown on the HCOM screen.
 
 5. On the Hunter, type `INP 999 HCOM.COM` and press Enter. The Hunter is now
    listening for the download.

@@ -220,7 +220,22 @@ The clock-setting screen appears showing date and time fields. Use **cursor left
 
 > **Year display:** the ROM unconditionally prepends `"19"` to the two-digit year, so setting the year to `26` will show as `1926` in `DATE$`. This is a known ROM limitation. 
 
-Once both steps are done, quit MAME. MAME writes the NVRAM state to `nvram/hunter_3/` on exit. Subsequent launches will have a clean file system and a running clock without any further setup.
+### 3 -- Configure the serial port (only if using the serial terminal or HCOM)
+
+If you plan to use the serial terminal or HCOM file transfer, set the Hunter's
+serial parameters now -- like the steps above, they persist in NVRAM. From the
+DEMOS prompt type:
+
+```
+COMS
+```
+
+Set **both** the transmission and receiving parameters to **4800 8N1** (not the
+2400 shown in the official Husky documentation -- 2400 corrupts over the MAME
+serial bridge). For the exact field-by-field values see
+`HuskyHCOM/HCOM_SETUP.md` -> **Hunter serial port settings**.
+
+Once these steps are done, quit MAME. MAME writes the NVRAM state to `nvram/hunter_3/` on exit. Subsequent launches will have a clean file system and a running clock (plus your serial settings, if set) without any further setup.
 
 > **Installing HCOM.COM via NVRAM injection?** If you built from source using `build/build_hunter_from_release.sh`, the script handles this automatically as Step 3 -- quit MAME when prompted and let it run. If setting up manually, quit MAME after completing both steps above, then run `scripts/inject_hcom.py` (see [HCOM file transfer](#hcom-file-transfer-dosbox-x) below). The injection writes directly to the NVRAM file on disk and must be done while MAME is not running. 
 
