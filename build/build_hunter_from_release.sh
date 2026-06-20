@@ -184,6 +184,46 @@ else
     fail "Canonical driver not found at $REPO_ROOT/src/mame/husky/husky-hunter2.cpp -- the release build will be missing FIX-10, FIX-13 and FIX-14"
 fi
 
+# ---------------------------------------------------------------------------
+# Verify every fix is actually present in the patched MAME tree.
+#
+# The apply loop above aborts only if a patch fails BOTH `git apply` and
+# `patch -p1`. It does NOT catch two real failure modes:
+#   1. The `patch -p1` fallback can apply a hunk with fuzz/offset and still
+#      return success, silently landing a change in the wrong place (or not
+#      at all for a hunk it considered "already applied").
+#   2. A stale/incomplete canonical driver copy could be missing FIX-10/14.
+#
+# Each fix leaves a distinctive marker string in its target file. If grep
+# can't find the marker, that fix did not make it into the tree, so we abort
+# now rather than after the ~20-minute build. Markers are matched as fixed
+# strings (-F) so parentheses etc. are treated literally.
+# ---------------------------------------------------------------------------
+msg "Verifying all fixes are present in the patched MAME tree"
+verify_fix() {
+    # $1 = file (relative to MAME tree), $2 = marker, $3 = label
+    local f="$MAME_DIR/$1"
+    [[ -f "$f" ]] || fail "Verification: expected file missing: $1 ($3)"
+    grep -qF -- "$2" "$f" || \
+        fail "Verification: $3 marker not found in $1 -- patch/copy did not apply correctly"
+    printf '    OK: %s\n' "$3"
+}
+
+# Patch-file fixes (applied to upstream files, not overwritten afterwards).
+verify_fix "scripts/src/osd/sdl.lua"               "must precede SDL2main"      "FIX-3  (sdl.lua link order)"
+verify_fix "src/devices/video/hd61830.cpp"         "FIX-4 (Kayto"               "FIX-4  (hd61830 font)"
+verify_fix "src/devices/bus/rs232/null_modem.cpp"  "FIX-5 (Kayto"               "FIX-5  (null_modem baud)"
+verify_fix "src/devices/machine/mm58174.cpp"       "FIX-7 (Husky-Hunter fork)"  "FIX-7  (mm58174 RTC run)"
+verify_fix "src/devices/machine/nsc810.cpp"        "FIX-9 (Kayto"               "FIX-9  (nsc810 timer 1)"
+verify_fix "src/devices/machine/nsc810.cpp"        "FIX-12 (Kayto"              "FIX-12 (nsc810 timer 0 mode 4)"
+# Canonical-driver fixes (come from the husky-hunter2.cpp copy above; the
+# FIX-1-2-6-8 hunter2.cpp patch is overwritten by that copy, so the driver
+# fixes are verified here against the copied file, not the patch).
+verify_fix "src/mame/husky/hunter2.cpp"            "FIX-10:"                    "FIX-10 (driver: rxd_w start-bit guard)"
+verify_fix "src/mame/husky/hunter2.cpp"            "install_nmi_vector_shadow"  "FIX-13 (driver: NMI vector shadow)"
+verify_fix "src/mame/husky/hunter2.cpp"            "FIX-14 (Kayto"              "FIX-14 (driver: DSR read invert)"
+msg "All fix markers verified -- the build will include every patch."
+
 msg "Building MAME Hunter subtarget"
 (
     cd "$MAME_DIR"
