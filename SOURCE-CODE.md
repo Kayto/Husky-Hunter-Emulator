@@ -18,12 +18,13 @@ as described below.
 
 ## Modifications
 
-All modifications to MAME source code made by this project are provided as
-patch files in the `patches/` directory of this repository:
+Modifications to **shared MAME files** (devices and the SDL build script) are
+provided as patch files in the `patches/` directory of this repository. The
+**Hunter driver** itself is provided as a complete canonical source file rather
+than a patch (see below):
 
 | Patch file | Affected MAME file | Description |
 | ---------- | ------------------ | ----------- |
-| `FIX-1-2-6-8-hunter2.cpp.patch` | `src/mame/husky/hunter2.cpp` | Core driver fixes (FIX-1, FIX-2, FIX-6, FIX-8) |
 | `FIX-3-sdl.lua.patch` | `scripts/src/osd/sdl.lua` | SDL build system fix (FIX-3) |
 | `FIX-4-hd61830.cpp.patch` | `src/devices/video/hd61830.cpp` | HD61830 LCD controller fix (FIX-4) |
 | `FIX-5-null_modem.cpp.patch` | `src/devices/bus/rs232/null_modem.cpp` | Null modem serial fix (FIX-5) |
@@ -31,11 +32,12 @@ patch files in the `patches/` directory of this repository:
 | `FIX-9-nsc810.cpp.patch` | `src/devices/machine/nsc810.cpp` | NSC810 Timer 1 clock/mode-select fix (FIX-9) |
 | `FIX-12-nsc810-timer0-mode4.patch` | `src/devices/machine/nsc810.cpp` | NSC810 Timer 0 mode 4 timer-tick output (FIX-12) |
 
-The canonical driver source is also provided directly at
-`src/mame/husky/husky-hunter2.cpp`. It additionally carries the driver-local
-fixes FIX-10, FIX-13 and FIX-14, which have no separate patch file (see
-`patches/PATCHES_README.md` and `CHANGES.md`); the build copies this file over
-`src/mame/husky/hunter2.cpp` to bring those fixes into the build.
+The Hunter driver is provided as a complete canonical source file at
+`src/mame/husky/husky-hunter2.cpp`. It carries **all** the driver-local fixes
+(FIX-1, FIX-2, FIX-6, FIX-8, FIX-10, FIX-13 and FIX-14), none of which have a
+separate patch file (see `patches/PATCHES_README.md` and `CHANGES.md`); the build
+copies this file over `src/mame/husky/hunter2.cpp` to bring those fixes into the
+build.
 
 To reconstruct the full modified MAME source tree:
 

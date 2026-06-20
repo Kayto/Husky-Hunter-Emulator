@@ -81,7 +81,6 @@ ROM dumps (`EPROM*.BIN`), generated `roms/hunter.zip`, and NVRAM are not include
 |   +-- mame.ini
 |   `-- TERATERM-hunter-mame.INI
 +-- patches/
-|   +-- FIX-1-2-6-8-hunter2.cpp.patch
 |   +-- FIX-3-sdl.lua.patch
 |   +-- FIX-4-hd61830.cpp.patch
 |   +-- FIX-5-null_modem.cpp.patch
@@ -125,6 +124,27 @@ pacman -S --needed git make python zip unzip mingw-w64-x86_64-gcc mingw-w64-x86_
 
 MAME has a substantial build dependency set. If the build fails because a tool is missing, install the missing MSYS2 package and rerun the build script. Also, expect 60mins and over 12Gb spare space!
 
+- - -
+
+## Supplying ROMs locally
+
+ROMs are not included. To run the emulator, place your own legally obtained Husky Hunter ROM images in `roms/`.
+
+The expected six-EPROM set is:
+
+| File | Expected use |
+| ---- | ------------ |
+| `EPROM0.BIN` | EPROM 0 / IC50 |
+| `EPROM1.BIN` | EPROM 1 / IC51 |
+| `EPROM2.BIN` | EPROM 2 / IC52 |
+| `EPROM3.BIN` | EPROM 3 / IC53 |
+| `EPROM4.BIN` | EPROM 4 / IC54 |
+| `EPROM5.BIN` | EPROM 5 / IC55; also used locally to extract the HD61830 font |
+
+Place these files in `roms/` and rerun the build script. The script generates a local `hunter.zip` for use by MAME. That generated zip is for local runtime use only and is not included in the repository.
+
+- - -
+
 ## "Quick" build
 
 Within MSYS2 MinGW64, **change into the repository root first**, then run the
@@ -156,25 +176,6 @@ After the build the script pauses for three interactive steps:
 * **Step 3 -- HCOM optional setup:** optionally downloads and runs `setup_hcom.sh`, which injects `HCOM.COM` directly into the NVRAM file (no serial connection needed).
 
 See `build/BUILD_INSTRUCTIONS.md` for the detailed build procedure.
-
-- - -
-
-## Supplying ROMs locally
-
-ROMs are not included. To run the emulator, place your own legally obtained Husky Hunter ROM images in `roms/`.
-
-The expected six-EPROM set is:
-
-| File | Expected use |
-| ---- | ------------ |
-| `EPROM0.BIN` | EPROM 0 / IC50 |
-| `EPROM1.BIN` | EPROM 1 / IC51 |
-| `EPROM2.BIN` | EPROM 2 / IC52 |
-| `EPROM3.BIN` | EPROM 3 / IC53 |
-| `EPROM4.BIN` | EPROM 4 / IC54 |
-| `EPROM5.BIN` | EPROM 5 / IC55; also used locally to extract the HD61830 font |
-
-Place these files in `roms/` and rerun the build script. The script generates a local `hunter.zip` for use by MAME. That generated zip is for local runtime use only and is not included in the repository.
 
 - - -
 

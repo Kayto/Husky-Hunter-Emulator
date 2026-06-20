@@ -16,15 +16,21 @@ cp src/mame/husky/husky-hunter2.cpp \
    <mame-src>/src/mame/husky/hunter2.cpp
 ```
 
-The patch file (`patches/FIX-1-2-6-8-hunter2.cpp.patch`) still targets `hunter2.cpp`
-(the correct MAME path) and is applied before the copy step, so the copy acts as a
-definitive override that supersedes the patch for FIX-1, FIX-2, FIX-6, and FIX-8.
+There is **no driver patch file**. Every Hunter-driver fix lives only in this
+canonical `husky-hunter2.cpp`, and the copy step above is the sole mechanism that
+brings them into the build (the shared device/build fixes are the ones shipped as
+`patches/*.patch`).
 
 ## Driver-local fixes that live only in this file
 
-Several fixes have **no separate patch file** -- they exist only in this canonical
-`husky-hunter2.cpp`, and the copy step above is what brings them into the build:
+All Hunter-driver fixes have **no separate patch file** -- they exist only in this
+canonical `husky-hunter2.cpp`, and the copy step above is what brings them into the
+build:
 
+* **FIX-1** -- bank2 reset offset `0x4000` -> `0x8000` (blank screen on boot).
+* **FIX-2** -- `memmap_w()` ROM range guard uses the architectural `0xC000` limit.
+* **FIX-6** -- RTC device swapped MM58274C (binary) -> MM58174A (BCD).
+* **FIX-8** -- RTC day-of-week host-encoding remap (`1=Mon..7=Sun`).
 * **FIX-10** -- serial RX `rxd_w` start-bit edge guard, plus removal of a debug
   `popmessage()` left in `cts_w`.
 * **FIX-13** -- NMI vector fetch in paged-RAM mode (ROM read-shadow at

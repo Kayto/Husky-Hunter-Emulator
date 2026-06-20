@@ -121,14 +121,15 @@ git -C "$MAME_DIR" clean -fdx
 msg "Applying release patches"
 [[ -d "$PATCH_DIR" ]] || fail "Patch directory not found: $PATCH_DIR"
 
-# Patch files apply to upstream files outside the Hunter driver, or to
-# device files (nsc810, mm58174, null_modem, hd61830, sdl.lua). The patches
-# below cover FIX-1..9 and FIX-12. FIX-10, FIX-11 (reverted), FIX-13 and FIX-14 live
-# entirely inside the canonical Hunter driver (src/mame/husky/husky-hunter2.cpp)
-# which is copied verbatim after the patches are applied -- so no patch file
-# is needed for those fixes.
+# A fix has a committed patch file if and only if the build applies one -- i.e.
+# the fix lives in a shared upstream/device/build file (nsc810, mm58174,
+# null_modem, hd61830, sdl.lua). Those are FIX-3, 4, 5, 7, 9 and 12 below.
+#
+# Every Hunter-driver fix (FIX-1, 2, 6, 8, 10, 13, 14; FIX-11 is verification-only,
+# no code) lives ONLY in the canonical driver src/mame/husky/husky-hunter2.cpp,
+# which is copied verbatim over hunter2.cpp after these patches are applied -- so
+# no driver patch file exists or is needed. See patches/PATCHES_README.md.
 patches=(
-    "FIX-1-2-6-8-hunter2.cpp.patch"
     "FIX-3-sdl.lua.patch"
     "FIX-4-hd61830.cpp.patch"
     "FIX-5-null_modem.cpp.patch"
@@ -157,11 +158,13 @@ for p in "${patches[@]}"; do
 done
 
 # Copy the canonical patched Hunter driver over the MAME tree after all patch
-# files have been applied. This is where FIX-10 (serial RX start-bit guard),
-# FIX-13 (NMI vector ROM shadow + powsav_w bank-force) and FIX-14 (DSR handshake
-# read inversion) live -- all are Hunter-driver-local with no separate patch
-# file. Without this copy step the resulting build would lack those fixes and the
-# serial transmit / receive-interrupt / full-duplex paths would break.
+# files have been applied. This copy is the ONLY source of every Hunter-driver
+# fix: FIX-1, 2, 6, 8 (boot/banking/RTC-device/day-of-week), FIX-10 (serial RX
+# start-bit guard), FIX-13 (NMI vector ROM shadow + powsav_w bank-force) and
+# FIX-14 (DSR handshake read inversion) -- all Hunter-driver-local with no
+# separate patch file. Without this copy step the resulting build would lack
+# those fixes and the serial transmit / receive-interrupt / full-duplex paths
+# would break.
 if [[ -f "$REPO_ROOT/src/mame/husky/husky-hunter2.cpp" ]]; then
     msg "Copying canonical patched Hunter driver into MAME tree (includes FIX-10, FIX-13, FIX-14)"
     mkdir -p "$MAME_DIR/src/mame/husky"
@@ -216,13 +219,13 @@ verify_fix "src/devices/bus/rs232/null_modem.cpp"  "FIX-5 (Kayto"               
 verify_fix "src/devices/machine/mm58174.cpp"       "FIX-7 (Husky-Hunter fork)"  "FIX-7  (mm58174 RTC run)"
 verify_fix "src/devices/machine/nsc810.cpp"        "FIX-9 (Kayto"               "FIX-9  (nsc810 timer 1)"
 verify_fix "src/devices/machine/nsc810.cpp"        "FIX-12 (Kayto"              "FIX-12 (nsc810 timer 0 mode 4)"
-# Canonical-driver fixes (come from the husky-hunter2.cpp copy above; the
-# FIX-1-2-6-8 hunter2.cpp patch is overwritten by that copy, so the driver
-# fixes are verified here against the copied file, not the patch).
+# Canonical-driver fixes (FIX-1, 2, 6, 8, 10, 13, 14 all come from the
+# husky-hunter2.cpp copy above -- there is no driver patch file). A representative
+# marker for the later, harder-to-verify fixes is checked against the copied file.
 verify_fix "src/mame/husky/hunter2.cpp"            "FIX-10:"                    "FIX-10 (driver: rxd_w start-bit guard)"
 verify_fix "src/mame/husky/hunter2.cpp"            "install_nmi_vector_shadow"  "FIX-13 (driver: NMI vector shadow)"
 verify_fix "src/mame/husky/hunter2.cpp"            "FIX-14 (Kayto"              "FIX-14 (driver: DSR read invert)"
-msg "All fix markers verified -- the build will include every patch."
+msg "All fix markers verified -- the build will include every fix."
 
 msg "Building MAME Hunter subtarget"
 (

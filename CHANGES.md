@@ -80,6 +80,7 @@ ROMX_LOAD( "eprom5.ic55", 0xa000, 0x2000, CRC(48526702) SHA1(...), ROM_BIOS(3) )
 ## FIX-1 - bank2 reset offset: 0x4000 -> 0x8000 (blank screen on boot)
 
 **File:** `src/mame/husky/hunter2.cpp`, function `machine_reset()`
+**Patch:** none -- driver-local; built from canonical `src/mame/husky/husky-hunter2.cpp` (before/after below is the diff)
 
 **Symptom:** MAME displayed a completely blank screen immediately after launch.  The
 emulator appeared to run (it consumed CPU time) but nothing was ever written to the
@@ -113,6 +114,7 @@ m_bank2->set_base(m_rom->base() + 0x8000);
 ## FIX-2 - memmap_w() ROM range guard: m_rom->bytes() -> 0xC000
 
 **File:** `src/mame/husky/hunter2.cpp`, function `memmap_w()`
+**Patch:** none -- driver-local; built from canonical `src/mame/husky/husky-hunter2.cpp` (before/after below is the diff)
 
 **Symptom:** When BASIC paged in ROM bank 2, it could appear to succeed but silently
 mapped an uninitialised/0xFF region instead of raising an out-of-range error.
@@ -145,6 +147,7 @@ if ((0x8000 + (0x4000 * bank)) < 0xc000)
 ## FIX-3 - sdl.lua: mingw32 must precede SDL2main in link order
 
 **File:** `scripts/src/osd/sdl.lua`
+**Patch:** `patches/FIX-3-sdl.lua.patch`
 
 **Symptom:** Linking `sdlhunter.exe` under MSYS2 MinGW64 failed with:
 
@@ -172,6 +175,7 @@ links { "mingw32", "SDL2main", "SDL2", "imm32", "version" }
 ## FIX-4 - hd61830.bin: supply actual Hunter font to replace BAD_DUMP placeholder
 
 **File:** `src/devices/video/hd61830.cpp`
+**Patch:** `patches/FIX-4-hd61830.cpp.patch` (source ref only; the `hd61830.bin` font binary is extracted, not patched -- see below)
 **Data file:** `roms/hunter.zip` -> `hd61830.bin`
 
 **Background:** The upstream `hd61830.bin` was flagged `BAD_DUMP` with the comment
@@ -202,6 +206,7 @@ ROM_LOAD( "hd61830.bin", 0x000, 0x5c0, CRC(85497474) SHA1(734b6c8e399b758ce9e3b2
 ## FIX-5 - `null_modem` default baud changed to 4800 (HCOM compatibility)
 
 **File:** `src/devices/bus/rs232/null_modem.cpp`
+**Patch:** `patches/FIX-5-null_modem.cpp.patch`
 
 The MAME `null_modem` RS232 device defaults its TX/RX baud rates to 9600.  The Hunter
 runs HCOM at a hardcoded 4800 baud (per the Husky `LaunchHCOM.ps1` device table for
@@ -232,6 +237,7 @@ Hunter side is set via `COMS` to match.
 ## FIX-6 - RTC device: MM58274C (binary) -> MM58174A (BCD)
 
 **File:** `src/mame/husky/hunter2.cpp`
+**Patch:** none -- driver-local; built from canonical `src/mame/husky/husky-hunter2.cpp` (before/after below is the diff)
 
 **Symptom:** From BASIC, `PRINT TIME$` and `PRINT DATE$` returned partly-correct values
 that broke at any digit-boundary rollover. For example, with the clock at 24-hour
@@ -299,6 +305,7 @@ that increments through month boundaries.
 ## FIX-7 - MM58174A: default the clock to running at `device_start()`
 
 **File:** `src/devices/machine/mm58174.cpp`
+**Patch:** `patches/FIX-7-mm58174.cpp.patch`
 
 **Symptom:** After FIX-6 (the device-class swap), `PRINT TIME$` returned a frozen
 value at every MAME launch. The displayed time was correct *for the moment of launch*
@@ -352,6 +359,7 @@ using `mm58174_device`.
 ## FIX-8 -- RTC day-of-week host encoding remap
 
 **File:** `src/mame/husky/hunter2.cpp` (Hunter-driver-local; no upstream device change)
+**Patch:** none -- driver-local; built from canonical `src/mame/husky/husky-hunter2.cpp` (before/after below is the diff)
 
 **Problem:** Software reading MM58174A port 4AH gets a value one day off the
 host wallclock (e.g. a Monday host reports Tuesday).
