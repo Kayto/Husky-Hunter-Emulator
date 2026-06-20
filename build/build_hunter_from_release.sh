@@ -140,10 +140,20 @@ patches=(
 for p in "${patches[@]}"; do
     [[ -f "$PATCH_DIR/$p" ]] || fail "Missing patch: $PATCH_DIR/$p"
     msg "Applying $p"
-    git -C "$MAME_DIR" apply --whitespace=nowarn "$PATCH_DIR/$p" || {
+    # Normalize CRLF -> LF at apply time. git's autocrlf (and a Windows/GitHub
+    # checkout) can reintroduce CRLF into the .patch files, which makes the strict
+    # `git apply` reject every hunk (patch line-endings != the LF MAME source). Strip
+    # CR bytes (octal \015 -- POSIX tr guarantees octal escapes; the \r form is not
+    # reliable on every tr) into a temp, so `git apply` applies cleanly regardless of
+    # how the patch was checked out. The patch -p1 fallback (for any real context
+    # drift, e.g. FIX-3 / FIX-12) reads the same normalized temp.
+    norm="$(mktemp)"
+    tr -d '\015' < "$PATCH_DIR/$p" > "$norm"
+    git -C "$MAME_DIR" apply --whitespace=nowarn "$norm" || {
         msg "git apply failed; retrying with patch -p1 for $p"
-        (cd "$MAME_DIR" && patch -p1 < "$PATCH_DIR/$p")
+        (cd "$MAME_DIR" && patch -p1 < "$norm")
     }
+    rm -f "$norm"
 done
 
 # Copy the canonical patched Hunter driver over the MAME tree after all patch

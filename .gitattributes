@@ -1,0 +1,8 @@
+# Keep MAME patch files LF-only regardless of core.autocrlf.
+#
+# `git apply` normalizes the (CRLF) working-tree target to LF internally and
+# then expects an LF patch. On Windows / GitHub with core.autocrlf=true a
+# checkout would otherwise reintroduce CRLF into these *.patch files, making
+# every hunk fail ("patch does not apply") and forcing build_hunter_from_release.sh
+# to fall back to `patch -p1`. Pinning them to LF keeps `git apply` working.
+*.patch text eol=lf
