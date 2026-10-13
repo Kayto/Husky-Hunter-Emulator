@@ -8,6 +8,8 @@ See Licensing.
 
 The aim is to make the modified MAME Husky Hunter driver reproducible from a fresh upstream MAME source tree while keeping the release suitable for public GitHub distribution.
 
+> **New here?** Start with **[QUICKSTART.md](QUICKSTART.md)** -- run a prebuilt binary or build from source in a few steps.
+
 - - -
 
 ## Release
@@ -63,6 +65,7 @@ ROM dumps (`EPROM*.BIN`), generated `roms/hunter.zip`, and NVRAM are not include
 ``` text
 .
 +-- README.md
++-- QUICKSTART.md                # fast-start: run a prebuilt binary or build from source
 +-- CHANGES.md
 +-- MAME_STATUS_RELEASE.md       # emulation fidelity / coverage assessment
 +-- SOURCE-CODE.md
@@ -91,7 +94,8 @@ ROM dumps (`EPROM*.BIN`), generated `roms/hunter.zip`, and NVRAM are not include
 +-- scripts/
 |   +-- extract_hd61830_font.py
 |   +-- inject_hcom.py
-|   `-- serial_bridge.py
+|   +-- serial_bridge.py
+|   `-- setup_hunter.py          # no-MSYS2 Track A: package ROMs, first-run, HCOM install
 +-- src/
 |   `-- mame/husky/
 |       +-- husky-hunter2.cpp

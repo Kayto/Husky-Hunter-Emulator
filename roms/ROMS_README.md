@@ -87,6 +87,23 @@ python3 /path/to/release/scripts/extract_hd61830_font.py \
 cp "$WORK/hunter.zip" roms/
 ```
 
+### Option C -- Windows, no MSYS2 (Python)
+
+If you have a prebuilt `sdlhunter.exe` and don't want the MSYS2 build, use the
+Python setup helper -- it needs only Python 3 (no compiler, no extra packages).
+Put `EPROM0.BIN`-`EPROM5.BIN` in this `roms/` folder, then from the repository
+root run:
+
+```powershell
+python scripts\setup_hunter.py
+```
+
+It renames the EPROMs, extracts the HD61830 font, verifies every CRC32 against
+the table above, and writes `roms\hunter.zip` (also copied into
+`output\runtime\roms\` if a prebuilt runtime is present). It then offers the
+one-time first-run setup and optional HCOM install -- see
+[`../QUICKSTART.md`](../QUICKSTART.md), Track A.
+
 ---
 
 ## Redistribution

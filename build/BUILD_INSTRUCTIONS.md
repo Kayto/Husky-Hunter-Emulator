@@ -140,11 +140,15 @@ The `sdlhunter.exe` binary expects to be launched from the **repository root** s
 Run `clean.ps1` from the repository root to remove all build artefacts and restore the folder to its pre-build state:
 
 ```powershell
-.\build\clean.ps1          # prompts for confirmation
-.\build\clean.ps1 -Force   # skips confirmation
+.\build\clean.ps1              # prompts for confirmation
+.\build\clean.ps1 -Force       # skips confirmation
+.\build\clean.ps1 -KeepHcom    # keep the HCOM downloads
+.\build\clean.ps1 -KeepRuntime # Track A: keep the prebuilt exe, ROMs and HCOM
 ```
 
 This removes `output/`, `roms/hunter.zip`, `cfg/`, `nvram/`, and `config/ui.ini`. Your `EPROM*.BIN` ROM dumps are not removed.
+
+Use `-KeepRuntime` if you run a **prebuilt** binary (Track A) and cannot rebuild it without MSYS2: it clears the MAME source tree and runtime state but keeps `output/runtime/` (the binary + DLLs), `roms/hunter.zip`, and the HCOM downloads. `clean.bat` offers the same choices from a menu (`F`/`K`/`R`/`B`).
 
 ## Binary redistribution note
 

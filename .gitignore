@@ -30,11 +30,11 @@ launchers/LaunchHunterDebug.bat
 launchers/LaunchHunterDebug.ps1
 
 # Build output directory (mame source clone, runtime binary, generated roms)
-output/
+output/runtime/roms
 
 # Binaries and build outputs
-*.exe
-*.dll
+#*.exe
+#*.dll
 *.pdb
 *.o
 *.obj
@@ -72,3 +72,4 @@ scripts/mame*
 *.tar.gz
 *.zip
 *.tar
+*.txt
